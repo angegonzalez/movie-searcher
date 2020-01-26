@@ -1,0 +1,14 @@
+.search-card
+{
+    height: auto;
+    padding: 1.5rem;
+    border-radius: 7px;
+    background: linear-gradient(to right, #41295a, #2f0743);
+}
+.search-card h3{
+    color: white;
+    margin-right: 3rem;
+    padding-left: 0%;
+    width: 21%;
+    max-width: 20rem;
+}
