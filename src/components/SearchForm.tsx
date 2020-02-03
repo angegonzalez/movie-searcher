@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "../styles/SearchForm.css";
 
+const API_KEY = "d2688f2f";
+
 var searchBar = [
   "Busca una pelicula",
   "Accion",
@@ -9,9 +11,13 @@ var searchBar = [
   "Movie Searcher"
 ];
 
-export default class SearchForm extends Component<{}, { title: string }> {
+export default class SearchForm extends Component<
+  { onResults: (results: []) => void },
+  { title: string; inputMovie: string }
+> {
   state = {
-    title: ""
+    title: "",
+    inputMovie: ""
   };
 
   componentDidMount() {
@@ -41,16 +47,31 @@ export default class SearchForm extends Component<{}, { title: string }> {
   }
   write = async (cadena: string) => {
     try {
-      const result = await this.writeTitle(cadena);
+      await this.writeTitle(cadena);
     } catch (err) {
       return console.log(err.message);
     }
   };
 
+  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ inputMovie: e.target.value });
+  };
+  handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const inputMovie = this.state.inputMovie;
+    fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=${inputMovie}`)
+      .then(res => res.json())
+      .then(results => {  
+        const search= results.Search;
+        console.log(search);
+        this.props.onResults(search);
+      });
+  };
+
   render() {
     return (
       <div className="search-card">
-        <form className="form-inline">
+        <form className="form-inline" onSubmit={this.handleSubmit}>
           {this.state.title === searchBar[searchBar.length - 1] ? (
             <h3 className="font-weight-bold">{this.state.title}</h3>
           ) : (
@@ -62,6 +83,7 @@ export default class SearchForm extends Component<{}, { title: string }> {
             type="search"
             placeholder="Search movies"
             aria-label="Search"
+            onChange={this.handleChange}
           />
 
           <button className="btn btn-outline-light my-2 my-sm-7" type="submit">
